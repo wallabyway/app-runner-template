@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  One-click deploy of this repo to AWS App Runner
+Parameters:
+  RepoUrl:
+    Type: String
+    Default: https://github.com/OWNER/REPO
+  Branch:
+    Type: String
+    Default: main
+Resources:
+  AppRunnerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: tasks.apprunner.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
+
+  MyService:
+    Type: AWS::AppRunner::Service
+    Properties:
+      ServiceName: !Sub ${AWS::StackName}
+      SourceConfiguration:
+        AuthenticationConfiguration: {}
+        AutoDeploymentsEnabled: true
+        CodeRepository:
+          RepositoryUrl: !Ref RepoUrl
+          SourceCodeVersion:
+            Type: BRANCH
+            Value: !Ref Branch
+          CodeConfiguration:
+            ConfigurationSource: REPOSITORY
+      InstanceConfiguration:
+        Cpu: '1 vCPU'
+        Memory: '2 GB'

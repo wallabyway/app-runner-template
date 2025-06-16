@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=no" />
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css">
+    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
+    <style>
+        body { margin: 0; height: 100vh; overflow: hidden; position: relative; }
+        #top { position: absolute; top: 0; left: 0; right: 0; height: 50px; padding: 10px; background: #f5f5f5; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 10px; justify-content: space-between; box-sizing: border-box; z-index: 100; }
+        #viewer { position: absolute; top: 50px; left: 0; right: 0; bottom: 0; background: #F0F8FF; }
+        #status { color: #666; }
+        select, button { padding: 5px; border-radius: 4px; border: 1px solid #ccc; background: white; cursor: pointer; }
+        button { align-items: right; }
+        button:hover { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <div id="top">
+        <div>
+          <span id="logo">Select a Model</span>
+          <select id="select" onchange="loadSelected()"></select>
+          <span id="status"></span>
+      </div>
+      <div>
+          <input type="file" id="file" hidden>
+          <button onclick="file.click()">Upload a Model</button>
+      </div>
+    </div>
+    <div id="viewer"></div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const [file, select, status, div] = ['file', 'select', 'status', 'viewer'].map($);
+        
+        let viewer;
+        
+        const api = {
+            token: async () => (await fetch('/api/token')).json(),
+            list: async () => (await fetch('/api/list')).json(),
+            upload: async file => {
+                const formData = new FormData();
+                formData.append('file', file);
+                return (await fetch('/api/upload', {method:'POST', body: formData})).json();
+            }
+        };
+
+        const loadModel = urn => Autodesk.Viewing.Document.load(`urn:${urn}`, doc => 
+            viewer.loadDocumentNode(doc, doc.getRoot().getDefaultGeometry()));
+
+        const loadBucketContents = async () => {
+            select.innerHTML = '<option>Select file...</option>';
+            const {items} = await api.list();
+            items.forEach(item => {
+                const option = new Option(item.objectKey, item.objectId);
+                option.dataset.bucketKey = item.bucketKey;
+                select.appendChild(option);
+            });
+        };
+
+        const loadSelected = () => {
+            const opt = select.selectedOptions[0];
+            opt?.value && (status.textContent = 'Loading...', loadModel(btoa(opt.value)), status.textContent = 'Loaded');
+        };
+
+        // Init
+        Autodesk.Viewing.Initializer({
+            env: 'AutodeskProduction2',
+            api: 'streamingV2',
+            getAccessToken: async cb => {
+                const {access_token, expires_in} = await api.token();
+                cb(access_token, expires_in);
+            }
+        }, async () => {
+            viewer = new Autodesk.Viewing.GuiViewer3D(div);
+            viewer.start();
+            
+            const urn = new URLSearchParams(location.search).get('urn');
+            urn && loadModel(urn);
+            await loadBucketContents();
+        });
+
+        file.onchange = async ({target:{files:[file]}}) => {
+            if(!file) return;
+            status.textContent = 'Uploading...';
+            const {urn} = await api.upload(file);
+            status.textContent = 'Loading...';
+            loadModel(urn);
+            status.textContent = 'Loaded';
+            await loadBucketContents();
+        };
+    </script>
+</body>
+</html>
