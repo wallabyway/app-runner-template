@@ -4,7 +4,7 @@ Description: >-
 Parameters:
   RepoUrl:
     Type: String
-    Default: https://github.com/OWNER/REPO
+    Default: https://github.com/wallabyway/app-runner-template
   Branch:
     Type: String
     Default: main
