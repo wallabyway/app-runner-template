@@ -3,7 +3,7 @@ from utils import get_token, upload_file, translate, status, list_bucket
 app = Flask(__name__)
 @app.route('/')
 def index():
-    return send_file('index.html')
+    return send_file('viewer.html')
 @app.route('/api/token')
 def api_token():
     return jsonify({"access_token": get_token()})
@@ -23,4 +23,4 @@ def api_list():
     token = get_token()
     return jsonify(list_bucket(token))
 if __name__ == '__main__':
-    app.run(port=5000) 
+    app.run(port=8080) 
