@@ -1,17 +1,55 @@
-version: 1.0
-runtime: python3
-build:
-  commands:
-    build:
-      - echo "Installing Python dependencies..."
-      - pip install flask requests python-dotenv
-      # Add any other dependencies your utils.py might need
-run:
-  runtime-version: '3.11'
-  command: python server.py
-  network:
-    port: 8080
-    env: PORT
-  env:
-    - name: FLASK_ENV
-      value: production
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Minimal App Runner (public GitHub, 0.5 vCPU / 1 GB)
+
+Parameters:
+  APSClientId:
+    Type: String
+    Description: APS Client ID
+    Default: "XL____ep3i"
+    NoEcho: false
+  
+  APSSecretId:
+    Type: String
+    Description: APS Secret ID
+    Default: "RCBhUKQ___Sr84e"
+    NoEcho: true
+  
+  BucketKey:
+    Type: String
+    Description: Bucket Key for APS storage
+    Default: "my_aps_storage_bucket_90210"
+    NoEcho: false
+
+Resources:
+  MyService:
+    Type: AWS::AppRunner::Service
+    Properties:
+      ServiceName: wallabyway-apprunner-demo
+      SourceConfiguration:
+        AuthenticationConfiguration:
+          ConnectionArn: arn:aws:apprunner:us-east-1:965644775496:connection/github/26647a52c16e461b81c91b4877dc7a70
+        AutoDeploymentsEnabled: false
+        CodeRepository:
+          RepositoryUrl: https://github.com/wallabyway/app-runner-template
+          SourceCodeVersion:
+            Type: BRANCH
+            Value: main
+          CodeConfiguration:
+            ConfigurationSource: API
+            CodeConfigurationValues:
+              Runtime: PYTHON_3
+              BuildCommand: "pip install 'urllib3<2' flask requests python-dotenv"
+              StartCommand: "python server.py"
+              Port: "8080"
+              RuntimeEnvironmentVariables:
+                - Name: APS_CLIENT_ID
+                  Value: !Ref APSClientId
+                - Name: APS_SECRET_ID
+                  Value: !Ref APSSecretId
+                - Name: BUCKET_KEY
+                  Value: !Ref BucketKey
+                - Name: FLASK_ENV
+                  Value: production
+      InstanceConfiguration:
+        Cpu: "0.5 vCPU"
+        Memory: "1 GB"
