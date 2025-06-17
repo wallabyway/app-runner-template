@@ -50,7 +50,7 @@
 
         const loadBucketContents = async () => {
             select.innerHTML = '<option>Select file...</option>';
-            const {items} = await api.list();
+            const items = await api.list();
             items.forEach(item => {
                 const option = new Option(item.objectKey, item.objectId);
                 option.dataset.bucketKey = item.bucketKey;
