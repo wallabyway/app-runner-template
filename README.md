@@ -43,10 +43,11 @@ Finally, refresh the browser and select the model from the combo box.
 #### Deploy to AWS App Runner
 
 [Deploy to AWS App Runner](
-  https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=my-apprunner-service&templateURL=https://public-blogs.s3.us-west-2.amazonaws.com/apprunner.yaml)
 
+<a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?stackName=my-apprunner-service&templateURL=https://public-blogs.s3.us-west-2.amazonaws.com/apprunner.yaml">
+  <img src="https://img.shields.io/badge/🚀%20Deploy%20to-AWS%20App%20Runner-FF9900?style=for-the-badge&labelColor=232F3E" alt="Deploy to AWS App Runner" width="300" height="60"/>
+</a>
 
-  
 
 Anyone who clicks the badge:
 	1.	Logs in (if not already).
