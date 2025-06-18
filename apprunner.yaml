@@ -1,13 +1,12 @@
 version: 1.0
-runtime: python3
+runtime: python311
 build:
   commands:
     build:
       - echo "Installing dependencies..."
-      - pip install 'urllib3<2' flask requests python-dotenv
+      - pip3 install 'urllib3<2' flask requests python-dotenv
 run:
-  runtime-version: '3.11'
-  command: python server.py
+  command: python3 server.py
   network:
     port: 8080
     env: PORT
