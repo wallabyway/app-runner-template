@@ -1,23 +1,29 @@
 version: 1.0
-runtime: python3
-build:
+runtime: python311          # keep 3.11
+
+build:                      # nothing critical happens here any more
   commands:
     build:
-      - echo "Installing dependencies..."
-      - pip3 install 'urllib3<2' flask requests python-dotenv
+      - echo "Build step – no dependencies installed here"
+
 run:
+  runtime-version: 3.11
+  pre-run:                  # NEW – installs into the running image
+    - pip3 install --no-cache-dir 'urllib3<2' flask requests python-dotenv
   command: python3 server.py
+
   network:
     port: 8080
     env: PORT
-  env:
+
+  env:                      # your existing vars
     - name: APS_CLIENT_ID
-      value: "CHANGE_ME_IN_CONSOLE"
+      value: CHANGE_ME_IN_CONSOLE
     - name: APS_SECRET_ID
-      value: "CHANGE_ME_IN_CONSOLE"
+      value: CHANGE_ME_IN_CONSOLE
     - name: BUCKET_KEY
-      value: "CHANGE_ME_IN_CONSOLE"
+      value: CHANGE_ME_IN_CONSOLE
     - name: FLASK_ENV
-      value: "production"
+      value: production
     - name: PORT
       value: "8080"
