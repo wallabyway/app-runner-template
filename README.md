@@ -3,10 +3,9 @@
 To create a simple 'View Revit Model in a Browser', use this prompt in Cursor:
 
 ```
-Create a minimal Python Flask backend (with /api/token, /api/upload, /api/status/<urn>, and /api/list endpoints using .env containing APS client ID, secret, and bucket name in utils.py). 
-Use `/signeds3upload` and `/batchcompleteupload` endpoint for the upload, encode the urn f"urn:adsk.objects:os.object:{BUCKET_KEY}/{urn}" and then translate to svf2.
-Finally, create a index.html frontend with an upload button and a combo box to upload, translate, and view .rvt models using the Autodesk Viewer SDK. 
-No comments or error checking, using only server.py, utils.py, and index.html.
+Create a Flask server with minimal code without comments or error checking.  Use APS APIs to provide endpoints /api/token, /api/upload, /api/status/<urn>, /api/list using 2-legged OAuth credentials and APS_BUCKET_KEY stored in a sample.env. Put APS logic in utils.py class (APSClient with methods for token, upload, translate, status, list, ensure_bucket), server code in server.py. Use proper APS signed S3 upload workflow (GET /signeds3upload, PUT S3, then finally POST /signeds3upload as per the docs), translate to SVF2 with base64-encoded URNs.
+
+Create viewer.html with MDL lite css component featuring top bar (title, translation status label, model dropdown, upload button) and Autodesk Viewer filling remaining screen space. When the model succeeds in translating, then load the models urn.  Write optimized, minimal code with async/await, without comments or error checking. Final result: complete 3D model upload, translation, and viewing application.
 ```
 
 #### Run it using:
