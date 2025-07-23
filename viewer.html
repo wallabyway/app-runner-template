@@ -72,7 +72,7 @@
                 cb(access_token, expires_in);
             }
         }, async () => {
-            viewer = new Autodesk.Viewing.GuiViewer3D(div);
+            viewer = new Autodesk.Viewing.GuiViewer3D(div, ["Autodesk.DocumentBrowser", "Autodesk.SmartSection", "Autodesk.ExtensionsPanel"]);
             viewer.start();
             
             const urn = new URLSearchParams(location.search).get('urn');
