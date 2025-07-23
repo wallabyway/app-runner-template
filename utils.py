@@ -39,7 +39,7 @@ def translate(token, urn):
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "x-ads-force": "true"}
     _urn = f"urn:adsk.objects:os.object:{BUCKET_KEY}/{urn}"
     urn_b64 = base64.b64encode(_urn.encode()).decode()
-    data = {"input": {"urn": urn_b64}, "output": {"formats": [{"type": "svf", "views": ["2d", "3d"]}]}}
+    data = {"input": {"urn": urn_b64}, "output": {"formats": [{"type": "svf2", "views": ["2d", "3d"]}]}}
     r = requests.post(url, headers=headers, json=data)
     print(f"Response from translation job: {r.status_code} - {r.text}")
     return urn_b64
